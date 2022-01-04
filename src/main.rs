@@ -1,8 +1,16 @@
-extern crate iui;
-use iui::controls::{Button, Group, Label, VerticalBox};
 use iui::prelude::*;
+use iui::controls::{Button, VerticalBox, GridAlignment, GridExpand, HorizontalSeparator,
+    Label, LayoutGrid, Group, MultilineEntry};
+use std::cell::RefCell;
+use std::rc::Rc;
+
+struct App_State {
+    multi_val: String
+}
 
 fn main() {
+
+    /*
     // Initialize the UI library
     let ui = UI::init().expect("Couldn't initialize UI library");
     // Create a window into which controls can be placed
@@ -51,4 +59,42 @@ fn main() {
     win.show(&ui);
     // Run the application
     ui.main();
+    */
+    // Initialize the UI framework.
+    let ui = UI::init().unwrap();
+
+    // Initialize the state of the application.
+    let state = Rc::new(RefCell::new(State {
+        multi_val: "".into()
+        }));
+
+    // Create a vertical layout to hold the controls
+    let mut vbox = VerticalBox::new(&ui);
+    vbox.set_padded(&ui, true);
+
+    let mut group_vbox = VerticalBox::new(&ui);
+    let mut group = Group::new(&ui, "Group");
+
+    let mut quit_button = Button::new(&ui, "Quit");
+    quit_button.on_clicked(&ui, {
+        let ui = ui.clone();
+        move |_| {
+            ui.quit();
+        }
+    });
+
+    // Create a window into which controls can be placed
+    let mut win = Window::new(&ui, "Test Word App", 600, 600, WindowType::NoMenubar);
+
+    group_vbox.append(&ui, quit_button, LayoutStrategy::Compact);
+    group.set_child(&ui, group_vbox);
+    vbox.append(&ui, group, LayoutStrategy::Compact);
+
+    // Actually put the button in the window
+    win.set_child(&ui, vbox);
+    // Show the window
+    win.show(&ui);
+    // Run the application
+    ui.main();
+
 }
